@@ -327,28 +327,35 @@ class Ui_MainWindow(object):
                 self.label_7.setText(str(nb_px_genere))
                 L=0
                 i=0
-                print ("nb pixel = ", nomb_pixel)
-                L=sqrt(nomb_pixel)
+                k=0
+                L=sqrt(nomb_pixel+3)
                 L=ceil(L)
                 print ("Largeur de l'image = ", L)
                 img = Image.new("RGB", (L, L))
                 pixels_img = img.load()
+                
                 for x in range(L):  ## Reconverti l'hexa en décimale répartie sur le R V B
                     for y in range(L):
-                        if (i < nomb_pixel):
+                        if (k < 2):
+                            pixels_img[x,y] = (255,0,0)
+                            k += 1
+                        elif (i < nomb_pixel):
                             value=rvb[i].zfill(6)#Rajoute un zéro au code hexa pour ceux quo n'ont que #12345
                             R=(int(value[0:2],16))#1-2 Ici on prend la valeur décimale des deux premier nombre du code + rajout des 0 inutiles pour faire #123456
                             G=(int(value[2:4],16))#3-4
                             B=(int(value[4:6],16))#5-6]
-                            print (i,"<",nomb_pixel)
                             print ("Valeur du pixel ",i+1," : R=",R ,"V=" ,G,"B=",B)
                             pixels_img[x,y] = (R,G,B)
                             i += 1
-                        else:
-                            print (i,">=",nomb_pixel)
-                            pixels_img[x,y] = (255,255,255)
+                        elif (i == nomb_pixel): # Pixel de fin
+                            pixels_img[x,y] = (0,0,255)
                             i += 1
-                            print ("Valeur du pixel ",i," : 255,255,255")
+                            print ("Valeur du pixel ",i," : 255,0,0")
+                        else:   #Rempli le reste de l'image en blanc
+
+                                pixels_img[x,y] = (255,255,255)
+                                i += 1
+                                print ("Valeur du pixel ",i," : 255,255,255")
 
                        
                 size= 360,360
@@ -377,8 +384,8 @@ class Ui_MainWindow(object):
     def display_nb_words(self):
         text = self.plainTextEdit.toPlainText()
         Nbmot=(len(text.split()))
-        L=ceil(sqrt(len(text.split())))
-        perte=(L*L-Nbmot)
+        L=ceil(sqrt(3+len(text.split())))
+        perte=(L*L-(Nbmot+3))
         phrase =  "Nombre de mots : {}      Taille de l'image : {}x{}      Nombre de pixels blanc : {}".format(Nbmot,L,L,perte)
         self.label_7.setText(str(phrase))
 
