@@ -233,6 +233,8 @@ class Ui_MainWindow(object):
                         if sentence_split[i] ==  line.strip():
                             ip_nom[i]=k
                             print (i,'Le mot ', sentence_split[i] ,' est trouvé a la ligne', k)
+                            phrase ="Recherche des occurence dans le dictionnaire, {} mot traité. Mot : {}".format(i,sentence_split[i])
+                            self.label_7.setText(str(phrase))
                             i += 1
                             j+=1
                             nomb_pixel=i
@@ -336,8 +338,11 @@ class Ui_MainWindow(object):
                 
                 for x in range(L):  ## Reconverti l'hexa en décimale répartie sur le R V B
                     for y in range(L):
-                        if (k < 2):
-                            pixels_img[x,y] = (255,0,0)
+                        if (k < 1):
+                            pixels_img[x,y] = (255,0,255)
+                            k += 1
+                        elif (k < 2):
+                            pixels_img[x,y] = (255,0,255)
                             k += 1
                         elif (i < nomb_pixel):
                             value=rvb[i].zfill(6)#Rajoute un zéro au code hexa pour ceux quo n'ont que #12345
@@ -348,7 +353,7 @@ class Ui_MainWindow(object):
                             pixels_img[x,y] = (R,G,B)
                             i += 1
                         elif (i == nomb_pixel): # Pixel de fin
-                            pixels_img[x,y] = (0,0,255)
+                            pixels_img[x,y] = (255,0,255)
                             i += 1
                             print ("Valeur du pixel ",i," : 255,0,0")
                         else:   #Rempli le reste de l'image en blanc
