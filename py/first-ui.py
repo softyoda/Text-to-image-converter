@@ -7,8 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 import sys
 from time import gmtime, strftime
-from PIL import Image
 import shutil
+from PIL import Image
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QAction, QMessageBox, QLabel
 from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdit, QFileDialog
@@ -20,6 +20,7 @@ from itertools import product
 from math import *
 import re
 import os
+import qdarkstyle
 
 
 
@@ -223,8 +224,9 @@ class Ui_MainWindow(object):
         if nb_mot != 0 :#execute tout la suite du code (tout la compilation) seulement si il y a des trucs a compilé
             print ("RECHERCHE : ")
             self.label_7.setText("Recherche des occurence dans le dictionnaire ") # RECHERCHE DES MOT DANS LE DICO, Renvoie des numéro de ligne
-            with open("Q:/users/desktop/dictionnary/dictionaire.txt","r") as myFile:
+            with open("C:/Users/yoann/Desktop/Text-to-image-converter-master/dictionaire.txt","r") as myFile:
                 for j in range (nb_mot):
+                    QtCore.QCoreApplication.processEvents()
                     k=0
                     myFile.seek(0)
                     for num, line in enumerate(myFile, 1):
@@ -233,7 +235,7 @@ class Ui_MainWindow(object):
                         if sentence_split[i] ==  line.strip():
                             ip_nom[i]=k
                             print (i,'Le mot ', sentence_split[i] ,' est trouvé a la ligne', k)
-                            phrase ="Recherche des occurence dans le dictionnaire, {} mot traité. Mot : {}".format(i,sentence_split[i])
+                            phrase ="Recherche des occurence dans le dictionnaire, {} mot traité sur {}".format(i,nb_mot)
                             self.label_7.setText(str(phrase))
                             i += 1
                             j+=1
@@ -244,7 +246,7 @@ class Ui_MainWindow(object):
                             break
 
                         
-                        elif k == (nb_ligne_dico)-1:
+                        elif k == (nb_ligne_dico)-1:#Si le mot ne fait pas parti du dictionaire
                             print("pastrouve")
                             if len(sentence_split[i])==1:
                                 q=0
@@ -292,7 +294,7 @@ class Ui_MainWindow(object):
                                         i += 1
                                         break
                             
-                            elif len(sentence_split[i])>4:
+                            elif len(sentence_split[i])>4: #Splitter le mot si taille > 4digit
                                 line = (sentence_split[i])
                                 [line[i:i+5] for i in range(0, len(line), 5)]
                                 print ("gg")
@@ -304,13 +306,13 @@ class Ui_MainWindow(object):
                 self.label_7.setText("Convertion des ligne du dictionnaire en pixels ")##Convertir le numéro de ligne en hexadécimal
                 i=0
                 for i in range (0,nomb_pixel):
+                    QtCore.QCoreApplication.processEvents()
                     if ip_nom[i] is not None:
                         rvb[i]='{0:x}'.format(ip_nom[i])
                         print ("Code hexa du pixel : #" , rvb[i])
                         i += 1
                         nombs_pixel=i
                         nombs_pixel_cent=nombs_pixel*100/nb_mot
-                        print ("pourcentage : " , nombs_pixel_cent)
                         self.progressBar.setProperty("value", nombs_pixel_cent)
 
                     elif ip_nom[i] is None:
@@ -318,7 +320,6 @@ class Ui_MainWindow(object):
                         i += 1
                         nombs_pixel=i
                         nombs_pixel_cent=nombs_pixel*100/nb_mot
-                        print ("pourcentage : " , nombs_pixel_cent)
                         self.progressBar.setProperty("value", nombs_pixel_cent)
 
                     else:
@@ -327,24 +328,28 @@ class Ui_MainWindow(object):
                 nb_px_genere =  "Nombre de pixels généré : %s " %(i)
                 print ( "Nombre de pixels généré : %s " %(i))
                 self.label_7.setText(str(nb_px_genere))
-                L=0
                 i=0
                 k=0
                 L=sqrt(nomb_pixel+3)
                 L=ceil(L)
-                print ("Largeur de l'image = ", L)
                 img = Image.new("RGB", (L, L))
                 pixels_img = img.load()
-                
+                print (i)
+                print (L)
+                print (nomb_pixel)
                 for x in range(L):  ## Reconverti l'hexa en décimale répartie sur le R V B
                     for y in range(L):
-                        if (k < 1):
+                        if (k < 1): #pixel debut
                             pixels_img[x,y] = (255,0,255)
                             k += 1
-                        elif (k < 2):
-                            pixels_img[x,y] = (255,0,255)
+                            print (i)
+                            print ("debut")
+                        elif (k < 2): #pixel début 2
+                            pixels_img[x,y] = (255,125,255)
                             k += 1
-                        elif (i < nomb_pixel):
+                        elif (i < nomb_pixel): #les  diférents pixels correspondant aux mots:
+                            print (i)
+                            print("i < nomb_pixel")
                             value=rvb[i].zfill(6)#Rajoute un zéro au code hexa pour ceux quo n'ont que #12345
                             R=(int(value[0:2],16))#1-2 Ici on prend la valeur décimale des deux premier nombre du code + rajout des 0 inutiles pour faire #123456
                             G=(int(value[2:4],16))#3-4
@@ -352,16 +357,23 @@ class Ui_MainWindow(object):
                             print ("Valeur du pixel ",i+1," : R=",R ,"V=" ,G,"B=",B)
                             pixels_img[x,y] = (R,G,B)
                             i += 1
-                        elif (i == nomb_pixel): # Pixel de fin
-                            pixels_img[x,y] = (255,0,255)
+                        elif (i == nomb_pixel): # Pixel de fin de code (peux aussi remplacer le pixel de fin d'image du bas a droite quand celui-ci est en bas a droite)
+                            print (i)
+                            print("i=nombpixel")
+                            pixels_img[x,y] = (255,125,255)
                             i += 1
-                            print ("Valeur du pixel ",i," : 255,0,0")
-                        else:   #Rempli le reste de l'image en blanc
-
-                                pixels_img[x,y] = (255,255,255)
-                                i += 1
-                                print ("Valeur du pixel ",i," : 255,255,255")
-
+                            print ("Valeur du pixel ",i," : 255,125,255")
+                        elif (i < ((L*L)-3)): #pixel blanc pour combler
+                            print (i)
+                            print ("(i < ((2*L)-1))") 
+                            pixels_img[x,y] = (255,255,255)
+                            i += 1
+                            print ("Valeur du pixel ",i," : 255,255,255")
+                        else:  #pixel de fin d'image (toujours en bas a droite)
+                            print (i)
+                            print ("else")
+                            pixels_img[x,y] = (255,0,255)
+                            print ("Valeur du pixel ",i," : 255,0,255")
                        
                 size= 360,360
                 cwd = os.getcwd()
@@ -369,18 +381,17 @@ class Ui_MainWindow(object):
                     os.makedirs("img/small")
                 if not os.path.exists("img/big"):
                     os.makedirs("img/big")
-                self.nom_img=("img/small/image{}.png".format(self.nb_gener))
-                self.nom_preview=("img/big/preview{}.png".format(self.nb_gener))
+                self.nom_img=("img/small/image{}.png".format(self.nb_gener)) #enregistre une première fois l'image en small
+                self.nom_preview=("img/big/preview{}.png".format(self.nb_gener)) #puis en big
                 img.save(self.nom_img,"PNG")
                 img=img.resize(size, Image.NEAREST )
                 img.save(self.nom_preview,"PNG")
                 self.nb_gener += 1
-                self.graphicsView.setStyleSheet("background-image: url({}); background-position: center; background-repeat: repeat-n; ".format(self.nom_preview));
+                self.graphicsView.setStyleSheet("background-image: url({}); background-position: center; background-repeat: repeat-n; ".format(self.nom_preview)); #l'affiche
                 self.convert=True
 
         else:
             self.convert=False
-            print ("Aucun texte a converir")
             self.label_7.setText("Aucun text a convertir")
                 
 
@@ -390,12 +401,12 @@ class Ui_MainWindow(object):
         text = self.plainTextEdit.toPlainText()
         Nbmot=(len(text.split()))
         L=ceil(sqrt(3+len(text.split())))
-        perte=(L*L-(Nbmot+3))
+        perte=((L*L-(Nbmot+3))-1)
+        perte=max(0, perte)
         phrase =  "Nombre de mots : {}      Taille de l'image : {}x{}      Nombre de pixels blanc : {}".format(Nbmot,L,L,perte)
         self.label_7.setText(str(phrase))
 
     def file_open(self):
-
         file=QFileDialog.getSaveFileName(filter='Images (*.png)')
         self.path=(file[0])
         self.lineEdit_3.setText(file[0])
@@ -419,19 +430,15 @@ class Ui_MainWindow(object):
             else:
                 self.label_7.setText("Vous devez d'abord convertir un texte pour pouvoir enregistrer l'image")
 
-
-
-
-
-
                     
 if __name__ == "__main__":
     nb_mot = 0
-    nb_ligne_dico = (sum(1 for line in open('Q:/users/desktop/dictionnary/dictionaire.txt')))
+    nb_ligne_dico = (sum(1 for line in open('C:/Users/yoann/Desktop/Text-to-image-converter-master/dictionaire.txt')))
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     MainWindow.show()
     sys.exit(app.exec_())
 
