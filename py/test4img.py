@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
         if nb_mot != 0 :#execute tout la suite du code (tout la compilation) seulement si il y a des trucs a compilé
             print ("RECHERCHE : ")
             self.label_7.setText("Recherche des occurence dans le dictionnaire ") # RECHERCHE DES MOT DANS LE DICO, Renvoie des numéro de ligne
-            with open("C:/Users/yoann/Desktop/Text-to-image-converter-master/dictionaire.txt","r") as myFile:
+            with open("C:/Users/yoann/Desktop/Text-to-image-converter/dictionaire.txt","r") as myFile:
                 for j in range (nb_mot):
                     QtCore.QCoreApplication.processEvents()
                     k=0
@@ -234,14 +234,14 @@ class Ui_MainWindow(object):
         
                         if sentence_split[i] ==  line.strip():
                             ip_nom[i]=k
-                            print (i,'Le mot ', sentence_split[i] ,' est trouvé a la ligne', k)
+                            #print (i,'Le mot ', sentence_split[i] ,' est trouvé a la ligne', k)
                             phrase ="Recherche des occurence dans le dictionnaire, {} mot traité sur {}".format(i,nb_mot)
                             self.label_7.setText(str(phrase))
                             i += 1
                             j+=1
                             nomb_pixel=i
                             nomb_pixel_cent=nomb_pixel*100/nb_mot
-                            print ("pourcentage : " , nomb_pixel_cent)
+                            #print ("pourcentage : " , nomb_pixel_cent)
                             self.progressBar.setProperty("value", nomb_pixel_cent)
                             break
 
@@ -309,7 +309,7 @@ class Ui_MainWindow(object):
                     QtCore.QCoreApplication.processEvents()
                     if ip_nom[i] is not None:
                         rvb[i]='{0:x}'.format(ip_nom[i])
-                        print ("Code hexa du pixel : #" , rvb[i])
+                        #print ("Code hexa du pixel : #" , rvb[i])
                         i += 1
                         nombs_pixel=i
                         nombs_pixel_cent=nombs_pixel*100/nb_mot
@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
                         print ("ERRREUR")
                         break
                 nb_px_genere =  "Nombre de pixels généré : %s " %(i)
-                print ( "Nombre de pixels généré : %s " %(i))
+                #print ( "Nombre de pixels généré : %s " %(i))
                 self.label_7.setText(str(nb_px_genere))
                 i=0
                 k=0
@@ -334,46 +334,33 @@ class Ui_MainWindow(object):
                 L=ceil(L)
                 img = Image.new("RGB", (L, L))
                 pixels_img = img.load()
-                print (i)
-                print (L)
-                print (nomb_pixel)
                 for x in range(L):  ## Reconverti l'hexa en décimale répartie sur le R V B
                     for y in range(L):
                         if (k < 1): #pixel debut
                             pixels_img[x,y] = (255,0,255)
                             k += 1
-                            print (i)
-                            print ("debut")
                         elif (k < 2): #pixel début 2
                             pixels_img[x,y] = (255,125,255)
                             k += 1
                         elif (i < nomb_pixel): #les  diférents pixels correspondant aux mots:
-                            print (i)
-                            print("i < nomb_pixel")
                             value=rvb[i].zfill(6)#Rajoute un zéro au code hexa pour ceux quo n'ont que #12345
                             R=(int(value[0:2],16))#1-2 Ici on prend la valeur décimale des deux premier nombre du code + rajout des 0 inutiles pour faire #123456
                             G=(int(value[2:4],16))#3-4
                             B=(int(value[4:6],16))#5-6]
-                            print ("Valeur du pixel ",i+1," : R=",R ,"V=" ,G,"B=",B)
+                            #print ("Valeur du pixel ",i+1," : R=",R ,"V=" ,G,"B=",B)
                             pixels_img[x,y] = (R,G,B)
                             i += 1
                         elif (i == nomb_pixel): # Pixel de fin de code (peux aussi remplacer le pixel de fin d'image du bas a droite quand celui-ci est en bas a droite)
-                            print (i)
-                            print("i=nombpixel")
                             pixels_img[x,y] = (255,125,255)
                             i += 1
-                            print ("Valeur du pixel ",i," : 255,125,255")
-                        elif (i < ((L*L)-3)): #pixel blanc pour combler
-                            print (i)
-                            print ("(i < ((2*L)-1))") 
+                            #print ("Valeur du pixel ",i," : 255,125,255")
+                        elif (i < ((L*L)-3)): #pixel blanc pour combler 
                             pixels_img[x,y] = (255,255,255)
                             i += 1
-                            print ("Valeur du pixel ",i," : 255,255,255")
+                            #print ("Valeur du pixel ",i," : 255,255,255")
                         else:  #pixel de fin d'image (toujours en bas a droite)
-                            print (i)
-                            print ("else")
                             pixels_img[x,y] = (255,0,255)
-                            print ("Valeur du pixel ",i," : 255,0,255")
+                            #print ("Valeur du pixel ",i," : 255,0,255")
                        
                 size= 360,360
                 cwd = os.getcwd()
@@ -433,7 +420,7 @@ class Ui_MainWindow(object):
                     
 if __name__ == "__main__":
     nb_mot = 0
-    nb_ligne_dico = (sum(1 for line in open('C:/Users/yoann/Desktop/Text-to-image-converter-master/dictionaire.txt')))
+    nb_ligne_dico = (sum(1 for line in open('C:/Users/yoann/Desktop/Text-to-image-converter/dictionaire.txt')))
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
