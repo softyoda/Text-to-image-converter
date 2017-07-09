@@ -2,7 +2,6 @@
 import pip    
 def install(package):
     pip.main(['install', package])
-
 install('BeautifulSoup4')
 install('lxml')
 install('unidecode')
@@ -225,7 +224,8 @@ while True : ##BOUCLE UTILISATEUR
     class AppURLopener(urllib.request.FancyURLopener):
         version = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0"
     nb_err=0
-    nb_mot_total_genere=0
+    nb_ligne_mots1 = (sum(1 for line in open('mots.txt')))
+    nb_mot_total_genere1=0
     nb_lien_total_genere=0
     start_time = time.time()
     for j in range (nb_pages):
@@ -261,10 +261,6 @@ while True : ##BOUCLE UTILISATEUR
                     i += 1
 
 
-                    
-
-
-
 
             # kill all script and style elements
             for script in soup(["script", "style"]):
@@ -293,7 +289,6 @@ while True : ##BOUCLE UTILISATEUR
             i=0
             with open("mots.txt", "a") as mots:
                 for i in range (nb_mot):  ##on converti en liste de mot qu'on enregistre dans mots.txt
-                    
                     sentence_split[i]=re.sub('[^a-zA-Z]+', '', sentence_split[i])
                     if len(sentence_split[i]) > 3  and len(sentence_split[i]) < 14: ##Ajoute au dico seulement les mot entre 3 et 14 lettres.
                         sentence_split[i]=(sentence_split[i]+"\n")
@@ -309,7 +304,7 @@ while True : ##BOUCLE UTILISATEUR
             print ("          Nombre de mots ajoutées : ",nb_mot_genere,"/",nb_ligne_mots) ##On affiche le nombre de mots enregistré dans la page
             print ("          Nombre de liens ajoutées : ",nb_lien_add,"/",nb_ligne_liens)
             print (colorama.Fore.CYAN+"###########################################################################\n"+colorama.Fore.RESET)
-            nb_mot_total_genere = nb_mot_total_genere + nb_mot_genere
+            nb_mot_total_genere1 = nb_mot_total_genere1 + nb_mot_genere
             nb_lien_total_genere = nb_lien_total_genere + nb_lien_add
             index += 1 ##Change l'url a chaque loop en ajoutant une incrémentation a l'index
             with open("index.txt", "w+") as leindex:
@@ -333,7 +328,14 @@ while True : ##BOUCLE UTILISATEUR
                 url = file.readlines()[index] 
                 url=str(url)
             continue
-        
+    print (colorama.Fore.GREEN+"\nSuppression des mots doublons.."+colorama.Fore.RESET)
+    with open("mots.txt" ,"r") as f:
+        list_word_sort = sorted(set([word for line in f for word in line.split()]))
+    with open("mots.txt" ,"w+") as f:
+        f.write("\n".join(list_word_sort))
+    print (colorama.Fore.GREEN+"Rangement par ordre alphabétique.."+colorama.Fore.RESET)
+    nb_ligne_mots2 = (sum(1 for line in open('mots.txt')))
+    nb_ligne_liens = (sum(1 for line in open('liens.txt')))
     end_time = time.time()
     duree = end_time - start_time
     moy = duree / nb_pages
@@ -341,12 +343,16 @@ while True : ##BOUCLE UTILISATEUR
     moy="%.2f"%moy
     duree=float(duree)
     moy=float(moy)
-    
+    total_ligne_add = nb_ligne_mots2 - nb_ligne_mots1
+    nb_link_trie = nb_mot_total_genere1 - total_ligne_add
+    pourcent = 100-(nb_err/nb_pages*100)
+    pourcent_arrondi = int((pourcent * 100) + 0.5) / 100.0
     print(colorama.Fore.CYAN+colorama.Style.BRIGHT +"\n\n\n\n\n###########################################################################")
-    print("   ",nb_mot_total_genere,"mots au total ont été incrémenté a mots.txt")
-    print("   ",nb_lien_total_genere,"liens au total ont été ajouté a liste.txt")
-    print("   ",nb_err," Pages n'ont pas été traité sur",nb_pages," soit ",nb_err*nb_pages/100,"%")
-    print("   Durée totale écoulée : ",str(datetime.timedelta(seconds=duree))[:-4]," Durée moyenne par page : ",str(datetime.timedelta(seconds=moy))[:-4])
+    print (" ",nb_link_trie,"mots sur ",nb_mot_total_genere1," ont été supprimé de word.txt apprès suppression des doublons")
+    print(" ",total_ligne_add,"mots ont été ajouté a mots.txt soit ",nb_ligne_mots2,"au total.")
+    print(" ",nb_lien_total_genere,"liens au total ont été ajouté a liste.txt soit ",nb_ligne_liens,"au total.")
+    print(" ",nb_err,"Pages n'ont pas été traité sur",nb_pages,"soit ",pourcent_arrondi,"% de réussite")
+    print(" Durée totale écoulée :",str(datetime.timedelta(seconds=duree))[:-4]," Durée moyenne par page :",str(datetime.timedelta(seconds=moy))[:-4])
     print ("###########################################################################\n\n\n"+colorama.Fore.RESET+colorama.Style.RESET_ALL)
 
 
