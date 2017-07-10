@@ -85,7 +85,7 @@ def get_url():##interface url
     print (colorama.Fore.CYAN+'''
 ###########################################################################
 #                                                                         #
-#                      VEILLEZ ENTRER UNE URL                             #
+#                      VEUILLEZ ENTRER UNE URL                             #
 #                exemple : '''+colorama.Fore.MAGENTA+'''https://fr.wikipedia.org'''+colorama.Fore.CYAN+'''                       #
 #                                                                         #
 ###########################################################################
@@ -108,7 +108,7 @@ def get_nb_pages():##interface nb pages
     print (colorama.Fore.CYAN+'''
 ###########################################################################
 #                                                                         #
-#                   NOMBRES DE PAGES A TRAITER                            #
+#                   NOMBRE DE PAGES A TRAITER                            #
 #                                                                         #
 ###########################################################################
     '''+colorama.Fore.RESET)
@@ -134,7 +134,7 @@ except IOError:
         
 ############################  si il n'y a pas de fichier de liens, le crée et définis la première page (wikipedia)   ##
         
-try: ##si il n'y a pas de fichier de liens, le crée et définis la première page (wikipedia)
+try: ##si il n'y a pas de fichier de liens, le crée et définit la première page (wikipedia)
     nb_ligne_dico = (sum(1 for line in open("liens.txt")))
     with open("liens.txt") as file:
         if nb_ligne_dico != 0 :
@@ -309,7 +309,7 @@ while True : ##BOUCLE UTILISATEUR
             index += 1 ##Change l'url a chaque loop en ajoutant une incrémentation a l'index
             with open("index.txt", "w+") as leindex:
                 leindex.write(str(index))
-            with open("liens.txt") as file: ## Set la nouvel url
+            with open("liens.txt") as file: ## Set la nouvelle url
                 url = file.readlines()[index] 
                 url=str(url)
             new=0
